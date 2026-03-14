@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>AI Sentiment Analyzer</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="background">
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<canvas id="particles"></canvas>
+
+</div>
+
+<div class="app">
+
+<header>
+
+<h1>🤖 AI Sentiment Analyzer</h1>
+
+<p>Phân tích cảm xúc phản hồi khách hàng</p>
+
+</header>
+
+<div class="input-card">
+
+<textarea id="textInput" placeholder="Nhập phản hồi khách hàng..."></textarea>
+
+<div class="buttons">
+
+<button onclick="analyze()">🚀 Phân tích</button>
+
+<button onclick="copyResult()">📋 Copy</button>
+
+</div>
+
+</div>
+
+<div id="loading" class="loading hidden">
+
+🤖 AI đang phân tích cảm xúc...
+
+</div>
+
+<div id="result" class="result hidden">
+
+<div class="emoji" id="emoji"></div>
+
+<h2 id="status"></h2>
+
+<div class="score">
+
+Điểm cảm xúc: <span id="score"></span>/100
+
+</div>
+
+<div class="score-bar">
+
+<div id="scoreFill"></div>
+
+</div>
+
+<div class="stars" id="stars"></div>
+
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>

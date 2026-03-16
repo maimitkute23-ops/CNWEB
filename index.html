@@ -1,138 +1,109 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="vi">
 <head>
-
-<meta charset="UTF-8">
-
-<title>Phân tích cảm xúc bằng AI</title>
-
-<link rel="stylesheet" href="style.css">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân tích phản hồi khách hàng</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
+    <div id="flash-overlay"></div>
+    <div class="bg-glow"></div>
 
-<div class="background"></div>
+    <div class="container">
+        <nav class="navbar">
+            <div class="logo">
+                <div class="logo-circle"></div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#">Products</a></li>
+                <li><a href="#">Use Cases</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">About Us</a></li>
+            </ul>
+            <button class="btn-get-started">Get Started</button>
+        </nav>
 
-<header>
+        <header class="hero">
+            <div class="badge">Bring your customer experience to the best scale</div>
+            <h1>Phân tích phản hồi<br>khách hàng</h1>
+            <p class="subtitle">Chính xác - Hiệu quả - Tốc độ</p>
+        </header>
 
-<h1>🤖 Phân tích cảm xúc bằng AI</h1>
+        <div class="input-section">
+            <div class="input-wrapper">
+                <input type="text" id="commentInput" placeholder="Input your customer comment....">
+                <button class="btn-send" id="sendBtn">
+                    Send 
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 12L22 2L15 22L11 13L2 12Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
 
-<p>Phân tích cảm xúc phản hồi khách hàng bằng trí tuệ nhân tạo</p>
+        <main class="results-card">
+            <div class="metric-group">
+                <div class="metric-header">
+                    <h3>HÀI LÒNG</h3>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-track">
+                        <div class="progress-fill" id="sentimentBar" style="width: 50%;"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>0%</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+            </div>
 
-</header>
+            <div class="metric-group">
+                <div class="metric-header">
+                    <h3>TỶ LỆ TRUNG THÀNH</h3>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-track">
+                        <div class="progress-fill" id="loyaltyBar" style="width: 50%;"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>0%</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+            </div>
 
-<div class="container">
+            <div class="metric-group emotion-group">
+                <h3>CẢM XÚC</h3>
+                <div class="emotion-badges">
+                    <span class="badge-emotion positive active" id="emoPositive">Tích cực</span>
+                    <span class="badge-emotion neutral" id="emoNeutral">Trung bình</span>
+                    <span class="badge-emotion negative" id="emoNegative">Tiêu cực</span>
+                </div>
+            </div>
 
-<!-- INPUT -->
+            <div class="analysis-group">
+                <h3>PHÂN TÍCH CHI TIẾT</h3>
+                <ul class="analysis-list">
+                    <li><strong>Chất lượng:</strong> <span id="resQuality"></span></li>
+                    <li><strong>Giá cả:</strong> <span id="resPrice"></span></li>
+                    <li><strong>Dịch vụ:</strong> <span id="resService"></span></li>
+                    <li><strong>Vận chuyển:</strong> <span id="resDelivery"></span></li>
+                </ul>
+            </div>
 
-<div class="card">
+            <div class="analysis-group">
+                <h3>CHÂN DUNG KHÁCH HÀNG:</h3>
+                <p class="analysis-text" id="resPortrait"></p>
+            </div>
 
-<h2>Phản hồi khách hàng</h2>
-
-<textarea
-id="feedback"
-placeholder="Nhập phản hồi của khách hàng..."
-></textarea>
-
-<button id="analyzeBtn">
-Phân tích cảm xúc
-</button>
-
-</div>
-
-
-<!-- RESULT -->
-
-<div class="card result-card">
-
-<h2>Kết quả phân tích</h2>
-
-<div id="sentiment"></div>
-
-<div id="score"></div>
-
-<div id="stars"></div>
-
-<div class="meter">
-<div id="meterBar"></div>
-</div>
-
-
-<h3>Từ khóa cảm xúc</h3>
-
-<div id="highlight"></div>
-
-
-<h3>Phân tích theo khía cạnh</h3>
-
-<table>
-
-<tr>
-<th>Khía cạnh</th>
-<th>Cảm xúc</th>
-</tr>
-
-<tr>
-<td>Sản phẩm</td>
-<td id="product"></td>
-</tr>
-
-<tr>
-<td>Giao hàng</td>
-<td id="delivery"></td>
-</tr>
-
-<tr>
-<td>Giá cả</td>
-<td id="price"></td>
-</tr>
-
-</table>
-
-
-<h3>Nhận xét của AI</h3>
-
-<div id="insight"></div>
-
-
-<h3>Gợi ý cải thiện</h3>
-
-<div id="recommendation"></div>
-
-
-<h3>Bảng thống kê cảm xúc</h3>
-
-<div class="dashboard">
-
-<div class="stat positive">
-Tích cực
-<span id="positiveCount">0%</span>
-</div>
-
-<div class="stat neutral">
-Trung tính
-<span id="neutralCount">0%</span>
-</div>
-
-<div class="stat negative">
-Tiêu cực
-<span id="negativeCount">0%</span>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<script src="script.js"></script>
-
+            <div class="analysis-group">
+                <h3>GỢI Ý CẢI THIỆN:</h3>
+                <p class="analysis-text" id="resProposal"></p>
+            </div>
+        </main>
+    </div>
+    <script src="index.js"></script>
 </body>
-
 </html>

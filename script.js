@@ -1,188 +1,246 @@
-// ===== Sentiment Analysis =====
+let stats = {
+positive:0,
+neutral:0,
+negative:0
+};
 
-const positiveWords=[
-"tốt","tuyệt","hài lòng","excellent","good","amazing",
-"great","love","perfect","nhanh","đẹp","thích"
-];
+const button = document.getElementById("analyzeBtn");
 
-const negativeWords=[
-"tệ","xấu","bad","terrible","hate","poor",
-"chậm","thất vọng","tồi","kém"
-];
+button.addEventListener("click", analyzeText);
 
-function analyze(){
+async function analyzeText(){
 
-let text=document.getElementById("textInput").value;
+const text = document.getElementById("feedback").value;
 
-let loading=document.getElementById("loading");
-let result=document.getElementById("result");
-
-if(text.trim()===""){
-alert("Vui lòng nhập phản hồi khách hàng");
+if(text===""){
+alert("Vui lòng nhập phản hồi");
 return;
 }
 
-loading.classList.remove("hidden");
-result.classList.add("hidden");
+try{
 
-setTimeout(()=>{
+const response = await fetch(
+"https://api.groq.com/openai/v1/chat/completions",
+{
+method:"POST",
 
-let score=50;
+headers:{
+"Content-Type":"application/json",
+"Authorization":"Bearer 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"
+},
 
-let lowerText=text.toLowerCase();
+body:JSON.stringify({
 
-positiveWords.forEach(word=>{
-if(lowerText.includes(word)) score+=10;
-});
+model:"llama-3.1-8b-instant",
 
-negativeWords.forEach(word=>{
-if(lowerText.includes(word)) score-=10;
-});
+messages:[
+{
+role:"user",
 
-if(score>100) score=100;
-if(score<0) score=0;
+content:`
 
-let stars=Math.round(score/20);
+Analyze this customer feedback:
 
-let status="";
-let emoji="";
-let color="";
+${text}
 
-if(score>=80){
+Return ONLY valid JSON.
+Do not explain anything.
 
-status="🟢 Rất tích cực";
-emoji="😍";
-color="#16a34a";
+{
+"sentiment":"positive/neutral/negative",
+"score":0,
+"highlight":"",
+"aspect":{
+"product":"",
+"delivery":"",
+"price":""
+},
+"insight":"",
+"recommendation":""
+}
+
+score must be between -1 and 1
+
+`
 
 }
 
-else if(score>=60){
+]
 
-status="😊 Tích cực";
-emoji="😀";
-color="#22c55e";
+})
 
 }
 
-else if(score>=40){
+);
 
-status="😐 Trung lập";
-emoji="🙂";
-color="#eab308";
+const data = await response.json();
+
+console.log("API RESPONSE:",data);
+
+/* kiểm tra lỗi API */
+
+if(!data.choices){
+console.error(data);
+alert("API returned error");
+return;
+}
+
+/* lấy kết quả */
+
+let result = data.choices[0].message.content.trim();
+
+/* FIX: Groq đôi khi trả text + json */
+
+const match = result.match(/{[\s\S]*}/);
+
+if(match){
+result = match[0];
+}
+
+displayResult(result);
 
 }
 
-else if(score>=20){
+catch(error){
 
-status="😕 Tiêu cực";
-emoji="😞";
-color="#f97316";
+console.error("API ERROR:",error);
+
+alert("AI API error");
 
 }
 
+}
+
+function displayResult(result){
+
+let obj;
+
+try{
+
+obj = JSON.parse(result);
+
+}catch(e){
+
+console.log("RAW RESULT:",result);
+
+alert("AI trả dữ liệu không đúng JSON");
+
+return;
+
+}
+
+/* đổi sentiment sang tiếng Việt */
+
+let sentimentText="";
+
+if(obj.sentiment==="positive"){
+sentimentText="Tích cực";
+}
+else if(obj.sentiment==="negative"){
+sentimentText="Tiêu cực";
+}
 else{
+sentimentText="Trung tính";
+}
 
-status="😡 Rất tiêu cực";
-emoji="😡";
-color="#ef4444";
+document.getElementById("sentiment").innerText =
+"Cảm xúc: "+sentimentText;
+
+/* chuyển điểm sang thang 1 → 5 */
+
+let starScore = Math.round((obj.score + 1) * 2) + 1;
+
+document.getElementById("score").innerText =
+"Đánh giá: "+starScore+"/5";
+
+document.getElementById("stars").innerText =
+getStars(obj.score);
+
+setMeter(obj.score);
+
+/* highlight */
+
+document.getElementById("highlight").innerHTML =
+highlightEmotion(obj.highlight);
+
+/* aspect */
+
+document.getElementById("product").innerText =
+obj.aspect.product;
+
+document.getElementById("delivery").innerText =
+obj.aspect.delivery;
+
+document.getElementById("price").innerText =
+obj.aspect.price;
+
+/* insight (nếu AI trả rỗng thì tạo nội dung mặc định) */
+
+let insightText =
+obj.insight && obj.insight.trim() !== ""
+? obj.insight
+: "Phản hồi này cho thấy khách hàng có trải nghiệm " + sentimentText.toLowerCase() + " đối với sản phẩm hoặc dịch vụ.";
+
+document.getElementById("insight").innerText =
+insightText;
+
+/* recommendation (nếu AI trả rỗng) */
+
+let recommendText =
+obj.recommendation && obj.recommendation.trim() !== ""
+? obj.recommendation
+: "Doanh nghiệp nên tiếp tục cải thiện chất lượng sản phẩm, tối ưu dịch vụ giao hàng và giữ mức giá hợp lý để nâng cao sự hài lòng của khách hàng.";
+
+document.getElementById("recommendation").innerText =
+recommendText;
+
+/* dashboard */
+
+updateStats(obj.sentiment);
 
 }
 
-let starIcons="";
+function getStars(score){
 
-for(let i=0;i<stars;i++){
-starIcons+="⭐";
-}
+let starScore = Math.round((score + 1) * 2) + 1;
 
-document.getElementById("emoji").innerHTML=emoji;
-
-document.getElementById("status").innerHTML=status;
-
-document.getElementById("status").style.color=color;
-
-document.getElementById("score").innerHTML=score;
-
-document.getElementById("stars").innerHTML=starIcons;
-
-document.getElementById("scoreFill").style.width=score+"%";
-
-loading.classList.add("hidden");
-
-result.classList.remove("hidden");
-
-},1200);
+return "⭐".repeat(starScore);
 
 }
 
-function copyResult(){
+function setMeter(score){
 
-let status=document.getElementById("status").innerText;
-let score=document.getElementById("score").innerText;
-let stars=document.getElementById("stars").innerText;
+let percent = (score+1)/2*100;
 
-if(score===""){
-alert("Chưa có kết quả");
-return;
-}
-
-let text=`Kết quả phân tích:
-
-${status}
-Điểm: ${score}/100
-Đánh giá: ${stars}
-`;
-
-navigator.clipboard.writeText(text);
-
-alert("Đã copy kết quả");
+document.getElementById("meterBar").style.width =
+percent+"%";
 
 }
 
+function highlightEmotion(text){
 
-// ===== Particle Background =====
-
-const canvas=document.getElementById("particles");
-
-const ctx=canvas.getContext("2d");
-
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-
-let particles=[];
-
-for(let i=0;i<60;i++){
-
-particles.push({
-
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
-size:Math.random()*3,
-speedX:(Math.random()-0.5)*0.5,
-speedY:(Math.random()-0.5)*0.5
-
-});
+return text
+.replace(/tốt|đẹp|hài lòng|tuyệt vời/gi,"<span style='color:#00ffae'>$&</span>")
+.replace(/chậm|tệ|xấu|kém/gi,"<span style='color:#ff4d4d'>$&</span>");
 
 }
 
-function animateParticles(){
+function updateStats(sentiment){
 
-ctx.clearRect(0,0,canvas.width,canvas.height);
+stats[sentiment]++;
 
-particles.forEach(p=>{
+let total =
+stats.positive +
+stats.neutral +
+stats.negative;
 
-p.x+=p.speedX;
-p.y+=p.speedY;
+document.getElementById("positiveCount").innerText =
+Math.round(stats.positive/total*100)+"%";
 
-ctx.beginPath();
-ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+document.getElementById("neutralCount").innerText =
+Math.round(stats.neutral/total*100)+"%";
 
-ctx.fillStyle="rgba(255,255,255,0.6)";
-ctx.fill();
-
-});
-
-requestAnimationFrame(animateParticles);
+document.getElementById("negativeCount").innerText =
+Math.round(stats.negative/total*100)+"%";
 
 }
-
-animateParticles();

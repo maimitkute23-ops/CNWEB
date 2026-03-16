@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 
 <head>
 
 <meta charset="UTF-8">
 
-<title>AI Sentiment Analyzer</title>
+<title>Phân tích cảm xúc bằng AI</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -17,65 +17,115 @@
 
 <body>
 
-<div class="background">
-
-<div class="blob blob1"></div>
-<div class="blob blob2"></div>
-<div class="blob blob3"></div>
-
-<canvas id="particles"></canvas>
-
-</div>
-
-<div class="app">
+<div class="background"></div>
 
 <header>
 
-<h1>🤖 AI Sentiment Analyzer</h1>
+<h1>🤖 Phân tích cảm xúc bằng AI</h1>
 
-<p>Phân tích cảm xúc phản hồi khách hàng</p>
+<p>Phân tích cảm xúc phản hồi khách hàng bằng trí tuệ nhân tạo</p>
 
 </header>
 
-<div class="input-card">
+<div class="container">
 
-<textarea id="textInput" placeholder="Nhập phản hồi khách hàng..."></textarea>
+<!-- INPUT -->
 
-<div class="buttons">
+<div class="card">
 
-<button onclick="analyze()">🚀 Phân tích</button>
+<h2>Phản hồi khách hàng</h2>
 
-<button onclick="copyResult()">📋 Copy</button>
+<textarea
+id="feedback"
+placeholder="Nhập phản hồi của khách hàng..."
+></textarea>
 
-</div>
-
-</div>
-
-<div id="loading" class="loading hidden">
-
-🤖 AI đang phân tích cảm xúc...
-
-</div>
-
-<div id="result" class="result hidden">
-
-<div class="emoji" id="emoji"></div>
-
-<h2 id="status"></h2>
-
-<div class="score">
-
-Điểm cảm xúc: <span id="score"></span>/100
+<button id="analyzeBtn">
+Phân tích cảm xúc
+</button>
 
 </div>
 
-<div class="score-bar">
 
-<div id="scoreFill"></div>
+<!-- RESULT -->
 
+<div class="card result-card">
+
+<h2>Kết quả phân tích</h2>
+
+<div id="sentiment"></div>
+
+<div id="score"></div>
+
+<div id="stars"></div>
+
+<div class="meter">
+<div id="meterBar"></div>
 </div>
 
-<div class="stars" id="stars"></div>
+
+<h3>Từ khóa cảm xúc</h3>
+
+<div id="highlight"></div>
+
+
+<h3>Phân tích theo khía cạnh</h3>
+
+<table>
+
+<tr>
+<th>Khía cạnh</th>
+<th>Cảm xúc</th>
+</tr>
+
+<tr>
+<td>Sản phẩm</td>
+<td id="product"></td>
+</tr>
+
+<tr>
+<td>Giao hàng</td>
+<td id="delivery"></td>
+</tr>
+
+<tr>
+<td>Giá cả</td>
+<td id="price"></td>
+</tr>
+
+</table>
+
+
+<h3>Nhận xét của AI</h3>
+
+<div id="insight"></div>
+
+
+<h3>Gợi ý cải thiện</h3>
+
+<div id="recommendation"></div>
+
+
+<h3>Bảng thống kê cảm xúc</h3>
+
+<div class="dashboard">
+
+<div class="stat positive">
+Tích cực
+<span id="positiveCount">0%</span>
+</div>
+
+<div class="stat neutral">
+Trung tính
+<span id="neutralCount">0%</span>
+</div>
+
+<div class="stat negative">
+Tiêu cực
+<span id="negativeCount">0%</span>
+</div>
+
+</div>
 
 </div>
 
@@ -84,4 +134,5 @@
 <script src="script.js"></script>
 
 </body>
+
 </html>
